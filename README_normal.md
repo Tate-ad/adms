@@ -78,7 +78,7 @@
 
   > 其中 `<id>` 为注册返回的 id 值 下面的例子直接使用了上述返回的 id 结果
 
-        http GET http://restful.adleida.com:8008/v1/dsp/5576c371c44b1a5756805130
+    http GET http://restful.adleida.com:8008/v1/dsp/5576c371c44b1a5756805130
 
   2. 你会接受到如同下列形式的返回信息
 
