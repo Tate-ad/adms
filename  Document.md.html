@@ -1,0 +1,174 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Untitled Document.md</title><style></style></head><body>
+<h1 id="adms">Adms</h1>
+<blockquote>
+<p>Assist Of Adx</p>
+</blockquote>
+<hr>
+<p>  <a href="https://pypi.python.org/pypi"><img src="https://img.shields.io/pypi/v/Scrapy.svg" alt="pypi"></a>
+  <a href="https://wiki.jovibox.org"><img src="https://img.shields.io/npm/dm/express.svg" alt="NPM Downloads"></a>
+  <a href="http://wiki.jovibox.org"><img src="https://img.shields.io/travis/strongloop/express/master.svg?label=linux" alt="Linux Build"></a>
+  <a href="https://ci.appveyor.com/project/dougwilson/express"><img src="https://img.shields.io/appveyor/ci/dougwilson/express/master.svg?label=windows" alt="Windows Build"></a>
+  <a href="https://coveralls.io/r/strongloop/express?branch=master"><img src="https://img.shields.io/coveralls/strongloop/express/master.svg" alt="Test Coverage"></a> </p>
+<pre><code class="lang-bash">http http://restful.adleida.com:<span class="hljs-number">8008</span>/
+
+HTTP/<span class="hljs-number">1.0</span> <span class="hljs-number">200</span> OK
+Content-Length: <span class="hljs-number">41</span>
+Content-Type: application/json
+Date: Tue, <span class="hljs-number">09</span> Jun <span class="hljs-number">2015</span> <span class="hljs-number">09</span>:<span class="hljs-number">09</span>:<span class="hljs-number">44</span> GMT
+Server: Werkzeug/<span class="hljs-number">0.10</span>.<span class="hljs-number">4</span> Python/<span class="hljs-number">2.7</span>.<span class="hljs-number">6</span>
+
+<span class="hljs-string">"Welcome to adleida restful API service!"</span>
+</code></pre>
+<hr>
+<h2 id="-">特性</h2>
+<ul>
+<li>成熟的数据管理系统 妥善保存 dsp 信息</li>
+<li>使用高性能 gridfs 完整存储物料</li>
+<li>物料经由审核流程确保安全合法</li>
+<li>cdn 大范围分发 大大降低等待时延</li>
+<li>支持高并发 HTTP 请求</li>
+</ul>
+<hr>
+<h2 id="-">客户端准备工作</h2>
+<pre><code class="lang-bash"><span class="hljs-built_in">sudo</span> apt install python
+wget https://bootstrap.pypa.io/get-pip.py
+<span class="hljs-built_in">sudo</span> python get-pip.py
+<span class="hljs-built_in">sudo</span> pip install httpie
+</code></pre>
+<hr>
+<h2 id="-">使用指南</h2>
+<h3 id="dsp-">Dsp 相关操作</h3>
+<p><strong>1. 注册 Dsp 基本信息</strong></p>
+<ol>
+<li><p>数据准备</p>
+<blockquote>
+<p>注册信息采用 json 数据格式，示例模型如下所示</p>
+<pre><code>{
+  &quot;name&quot;: &quot;dspname&quot;,
+  &quot;burl&quot;: &quot;http://example.dsp.com/path/to/bid/&quot;
+}
+</code></pre><ul>
+<li><code>name</code> 为 Dsp 方的名称</li>
+<li><code>burl</code> 为 Dsp 方竞价的服务器地址</li>
+</ul>
+</blockquote>
+</li>
+<li><p>调用 <code>RESTful-API</code> 进行注册 （假设现在你已经完成一份 <code>json</code> 格式的 <code>Dsp</code> 数据信息，这里暂时命名为 <code>Dsp-info.json</code>）</p>
+<pre><code>http POST http://restful.adleida.com:8008/v1/dsp/ &lt; dsp-info.json
+</code></pre></li>
+<li><p>确认并保留返回信息</p>
+<blockquote>
+<p>您将会接收到如同下列形式的返回信息。其中 <code>id</code> 是在我方服务端自行生成的唯一标识，<code>access_token</code> 作为以后对该注册信息操作的凭据，请自行妥善保存</p>
+<pre><code>HTTP/1.0 200 OK
+Content-Length: 103
+Content-Type: application/json
+Date: Tue, 09 Jun 2015 10:44:01 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+{
+  &quot;id&quot;: &quot;5576c371c44b1a5756805130&quot;,
+  &quot;access_token&quot;: &quot;d19a1398-ccf5-4c47-868c-a4abaf24e011&quot;,
+  &quot;message&quot;: &quot;successfully create your dsp information to adexchange&quot;
+}
+</code></pre></blockquote>
+</li>
+</ol>
+<p><strong>2. 查询 Dsp 信息</strong></p>
+<ol>
+<li><p>通过返还的 id 查询信息</p>
+<pre><code>http GET http://restful.adleida.com:8008/v1/dsp/&lt;id&gt;
+</code></pre><blockquote>
+<p>其中 <code>&lt;id&gt;</code> 为注册返回的 id 值 下面的例子直接使用了上述返回的 id 结果</p>
+<pre><code>http GET http://restful.adleida.com:8008/v1/dsp/5576c371c44b1a5756805130
+</code></pre></blockquote>
+</li>
+<li><p>你会接受到如同下列形式的返回信息</p>
+<pre><code>HTTP/1.0 200 OK
+Content-Length: 98
+Content-Type: application/json
+Date: Tue, 09 Jun 2015 10:52:58 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+
+{
+  &quot;burl&quot;: &quot;http://example.dsp.com/path/to/bid/&quot;, 
+  &quot;id&quot;: &quot;5576c371c44b1a5756805130&quot;, 
+  &quot;name&quot;: &quot;dspname&quot;
+}
+</code></pre></li>
+</ol>
+<p><strong>3. 修改已注册的 Dsp 信息</strong></p>
+<ol>
+<li><p>发送请求参数，提交 <code>PUT</code> 请求</p>
+<blockquote>
+<p>修改只需要将你想改变的字段作为参数交给请求一并发送至服务器即可，这里依然使用上述返回的 <code>id</code> 作为演示，请注意修改操作是需要提供 <code>access_token</code> 作为凭据的。下方示例修改了 <code>name</code> 字段的值</p>
+<pre><code>http PUT http://restful.adleida.com:8008/v1/dsp/ access_token:d19a1398-ccf5-4c47-868c-a4abaf24e011 id=5576c371c44b1a5756805130 name=newdspname
+</code></pre></blockquote>
+</li>
+<li><p>返回提示</p>
+<blockquote>
+<p>修改操作成功后返回提示信息如下所示</p>
+<pre><code>HTTP/1.0 200 OK
+Content-Length: 38
+Content-Type: application/json
+Date: Wed, 10 Jun 2015 02:45:32 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+&quot;successfully update your information&quot;
+</code></pre></blockquote>
+</li>
+<li><p>查询确认</p>
+<blockquote>
+<p>成功更新字段后查询进行确认</p>
+<pre><code>http GET http://restful.adleida.com:8008/v1/dsp/5576c371c44b1a5756805130
+</code></pre></blockquote>
+<pre><code>HTTP/1.0 200 OK
+Content-Length: 98
+Content-Type: application/json
+Date: Wed, 10 Jun 2015 02:45:42 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+
+{
+    &quot;burl&quot;: &quot;http://example.dsp.com/path/to/bid/&quot;, 
+    &quot;id&quot;: &quot;5576c371c44b1a5756805130&quot;, 
+    &quot;name&quot;: &quot;newdspname&quot;
+}
+</code></pre></li>
+</ol>
+<p><strong>4. 删除记录</strong></p>
+<ol>
+<li><p>发起<code>DELETE</code>请求</p>
+<blockquote>
+<p>删除动作只需要提供 <code>id</code> 和 <code>access_token</code> 即可完成操作，如下例所示</p>
+<pre><code>http DELETE http://restful.adleida.com:8008/v1/dsp/ access_token:d19a1398-ccf5-4c47-868c-a4abaf24e011 id=5576c371c44b1a5756805130
+</code></pre></blockquote>
+</li>
+<li><p>确认返回结果</p>
+<blockquote>
+<p>成功删除该条记录后会接收到如下提示信息</p>
+<pre><code>HTTP/1.0 200 OK
+Content-Length: 38
+Content-Type: application/json
+Date: Wed, 10 Jun 2015 03:32:29 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+&quot;successfully delete your information&quot;
+</code></pre></blockquote>
+</li>
+<li><p>查询验证</p>
+<blockquote>
+<p>此时便无法查询到该条记录</p>
+<pre><code>http GET http://restful.adleida.com:8008/v1/dsp/5576c371c44b1a5756805130
+</code></pre></blockquote>
+<pre><code>HTTP/1.0 404 NOT FOUND
+Content-Length: 39
+Content-Type: application/json
+Date: Wed, 10 Jun 2015 03:32:34 GMT
+Server: Werkzeug/0.10.4 Python/2.7.6
+
+{
+    &quot;message&quot;: &quot;Not Found&quot;, 
+    &quot;status&quot;: 404
+}
+</code></pre></li>
+</ol>
+<h2 id="license">License</h2>
+<pre><code>[MIT](LICENSE)
+</code></pre>
+</body></html>
